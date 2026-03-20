@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMICS — Home Tutoring Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8B6914;
+    --deep: #0A0F1E;
+    --navy: #101828;
+    --navy-mid: #1A2540;
+    --navy-light: #243058;
+    --text: #F0EBE0;
+    --text-muted: #A8A098;
+    --success: #2ECC71;
+    --error: #E74C3C;
+    --card-bg: rgba(26,37,64,0.85);
+    --border: rgba(201,168,76,0.25);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--deep); color:var(--text); min-height:100vh; overflow-x:hidden; }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse 80% 60% at 20% 10%,rgba(201,168,76,.08) 0%,transparent 60%),
+                linear-gradient(160deg,#0A0F1E 0%,#101828 50%,#0D1525 100%);
+    z-index:-1;
+  }
+
+  /* NAV */
+  nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 48px; border-bottom:1px solid var(--border);
+    background:rgba(10,15,30,.8); backdrop-filter:blur(12px);
+    position:sticky; top:0; z-index:100;
+  }
+  .nav-logo { display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .logo-icon {
+    width:42px; height:42px; border-radius:10px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display',serif; font-weight:900; font-size:20px; color:#0A0F1E;
+  }
+  .logo-text { font-family:'Playfair Display',serif; font-size:19px; font-weight:700; color:var(--gold); }
+  .logo-sub  { font-size:10px; color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; }
+  .nav-links { display:flex; gap:6px; align-items:center; }
+  .nav-btn { padding:9px 18px; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; border:none; transition:all .2s; }
+  .nav-btn.ghost { background:transparent; color:var(--text-muted); border:1px solid transparent; }
+  .nav-btn.ghost:hover { color:var(--gold); border-color:var(--border); }
+  .nav-btn.primary { background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#0A0F1E; font-weight:600; }
+  .nav-btn.primary:hover { opacity:.9; transform:translateY(-1px); }
+
+  /* PAGES */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* HERO */
+  .hero { padding:80px 48px 60px; max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+  .hero-eyebrow { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+  .hero h1 { font-family:'Playfair Display',serif; font-size:clamp(34px,4.5vw,56px); line-height:1.12; font-weight:900; margin-bottom:18px; }
+  .hero h1 span { color:var(--gold); }
+  .hero p { font-size:16px; color:var(--text-muted); line-height:1.7; margin-bottom:32px; }
+  .hero-ctas { display:flex; gap:12px; flex-wrap:wrap; }
+  .btn-lg { padding:13px 26px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; border:none; transition:all .25s; display:inline-flex; align-items:center; gap:8px; }
+  .btn-gold { background:linear-gradient(135deg,var(--gold-light),var(--gold-dark)); color:#0A0F1E; }
+  .btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,.35); }
+  .btn-outline { background:transparent; color:var(--gold); border:1.5px solid var(--gold); }
+  .btn-outline:hover { background:rgba(201,168,76,.1); transform:translateY(-2px); }
+
+  /* Hero visual cards */
+  .hero-visual { position:relative; display:flex; justify-content:center; }
+  .hero-card-stack { position:relative; width:320px; height:360px; }
+  .stat-card { position:absolute; border-radius:16px; padding:20px 24px; background:var(--card-bg); border:1px solid var(--border); backdrop-filter:blur(12px); }
+  .stat-card:nth-child(1) { top:0; left:0; width:200px; }
+  .stat-card:nth-child(2) { top:80px; right:0; width:190px; }
+  .stat-card:nth-child(3) { bottom:0; left:20px; width:210px; }
+  .stat-num { font-family:'Playfair Display',serif; font-size:32px; font-weight:900; color:var(--gold); }
+  .stat-lbl  { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .online-dot { display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; margin-right:6px; }
+
+  /* STATS BAR */
+  .stats-bar { display:flex; justify-content:center; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:rgba(26,37,64,.4); }
+  .stat-item { flex:1; max-width:220px; text-align:center; padding:26px 20px; border-right:1px solid var(--border); }
+  .stat-item:last-child { border-right:none; }
+  .stat-item .num { font-family:'Playfair Display',serif; font-size:26px; color:var(--gold); font-weight:700; }
+  .stat-item .lbl { font-size:11px; color:var(--text-muted); margin-top:4px; letter-spacing:1px; }
+
+  /* SECTION */
+  .section { max-width:1200px; margin:0 auto; padding:60px 48px; }
+  .section-title { font-family:'Playfair Display',serif; font-size:34px; font-weight:700; margin-bottom:8px; text-align:center; }
+  .section-title span { color:var(--gold); }
+  .section-sub { text-align:center; color:var(--text-muted); font-size:15px; margin-bottom:44px; }
+
+  /* CARDS GRID */
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:22px; }
+  .feature-card { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:26px; transition:all .25s; }
+  .feature-card:hover { border-color:var(--gold); transform:translateY(-4px); }
+  .card-icon { width:46px; height:46px; border-radius:12px; background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.05)); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:14px; }
+  .feature-card h3 { font-size:16px; font-weight:600; margin-bottom:7px; }
+  .feature-card p  { font-size:13px; color:var(--text-muted); line-height:1.6; }
+
+  /* ROLE CARDS */
+  .role-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; max-width:860px; margin:0 auto; }
+  .role-card { background:var(--card-bg); border:1px solid var(--border); border-radius:20px; padding:34px; text-align:center; cursor:pointer; transition:all .3s; }
+  .role-card:hover { border-color:var(--gold); transform:translateY(-5px); box-shadow:0 16px 40px rgba(0,0,0,.4); }
+  .role-emoji { font-size:46px; margin-bottom:14px; }
+  .role-card h3 { font-family:'Playfair Display',serif; font-size:21px; margin-bottom:8px; }
+  .role-card p  { color:var(--text-muted); font-size:13px; line-height:1.6; margin-bottom:18px; }
+  .role-card .tag { display:inline-block; padding:4px 14px; border-radius:20px; background:rgba(201,168,76,.15); border:1px solid var(--border); font-size:12px; color:var(--gold); }
+
+  /* FORM PAGE */
+  .form-page { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; }
+  .form-container { background:var(--navy-mid); border:1px solid var(--border); border-radius:24px; padding:42px; width:100%; max-width:560px; }
+  .form-back { display:inline-flex; align-items:center; gap:8px; color:var(--text-muted); font-size:13px; cursor:pointer; margin-bottom:26px; background:none; border:none; transition:color .2s; }
+  .form-back:hover { color:var(--gold); }
+  .form-header { margin-bottom:28px; }
+  .form-header .badge { display:inline-block; padding:4px 14px; border-radius:20px; background:rgba(201,168,76,.15); border:1px solid var(--border); font-size:11px; color:var(--gold); margin-bottom:10px; }
+  .form-header h2 { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; }
+  .form-header p  { color:var(--text-muted); font-size:13px; margin-top:5px; line-height:1.5; }
+  .form-group { margin-bottom:18px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  label { display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px; font-weight:500; }
+  input, select, textarea { width:100%; padding:11px 15px; border-radius:10px; background:rgba(10,15,30,.6); border:1px solid var(--border); color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; transition:border-color .2s; outline:none; }
+  input:focus, select:focus, textarea:focus { border-color:var(--gold); }
+  input::placeholder, textarea::placeholder { color:rgba(168,160,152,.5); }
+  select option { background:#1A2540; }
+  textarea { resize:vertical; min-height:90px; }
+  .checkbox-group { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { padding:7px 14px; border-radius:20px; font-size:12px; cursor:pointer; background:rgba(10,15,30,.6); border:1px solid var(--border); color:var(--text-muted); transition:all .2s; user-select:none; }
+  .chip:hover, .chip.selected { background:rgba(201,168,76,.15); border-color:var(--gold); color:var(--gold); }
+  .submit-btn { width:100%; padding:13px; border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; border:none; margin-top:6px; background:linear-gradient(135deg,var(--gold-light),var(--gold-dark)); color:#0A0F1E; transition:all .25s; }
+  .submit-btn:hover:not(:disabled) { opacity:.9; transform:translateY(-1px); }
+  .submit-btn:disabled { opacity:.6; cursor:not-allowed; }
+
+  /* SUCCESS */
+  .success-screen { text-align:center; padding:16px 0; }
+  .success-icon { font-size:60px; margin-bottom:18px; }
+  .success-screen h2 { font-family:'Playfair Display',serif; font-size:26px; margin-bottom:10px; }
+  .success-screen p  { color:var(--text-muted); line-height:1.7; font-size:14px; }
+  .success-id { margin:18px auto; padding:12px 22px; background:rgba(46,204,113,.1); border:1px solid rgba(46,204,113,.3); border-radius:10px; font-family:monospace; color:var(--success); display:inline-block; }
+
+  /* TUTORS */
+  .tutors-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); gap:18px; }
+  .tutor-card { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:22px; transition:all .25s; }
+  .tutor-card:hover { border-color:var(--gold); transform:translateY(-3px); }
+  .tutor-avatar { width:52px; height:52px; border-radius:50%; margin-bottom:12px; background:linear-gradient(135deg,var(--gold),var(--gold-dark)); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#0A0F1E; font-family:'Playfair Display',serif; }
+  .tutor-name { font-weight:600; font-size:15px; margin-bottom:3px; }
+  .tutor-subject { font-size:12px; color:var(--gold); margin-bottom:8px; }
+  .tutor-tags { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
+  .tutor-tag { font-size:11px; padding:3px 9px; border-radius:12px; background:rgba(201,168,76,.1); border:1px solid var(--border); color:var(--text-muted); }
+  .tutor-meta { display:flex; justify-content:space-between; align-items:center; }
+  .rating { color:var(--gold); font-size:12px; }
+  .contact-mini { font-size:12px; padding:6px 13px; border-radius:8px; background:rgba(201,168,76,.15); border:1px solid var(--border); color:var(--gold); cursor:pointer; }
+  .contact-mini:hover { background:rgba(201,168,76,.25); }
+  .search-bar { display:flex; gap:10px; margin-bottom:28px; flex-wrap:wrap; }
+  .search-input { flex:1; min-width:180px; padding:11px 16px; border-radius:10px; background:var(--card-bg); border:1px solid var(--border); color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; }
+  .search-input:focus { border-color:var(--gold); }
+  .filter-select { padding:11px 16px; border-radius:10px; background:var(--card-bg); border:1px solid var(--border); color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; cursor:pointer; }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); z-index:200; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal-box { background:var(--navy-mid); border:1px solid var(--border); border-radius:20px; padding:34px; max-width:460px; width:90%; position:relative; }
+  .modal-close { position:absolute; top:14px; right:14px; background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; }
+  .modal-close:hover { color:var(--text); }
+
+  /* DASHBOARD */
+  .dash-tab { padding:8px 18px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-muted); transition:all .2s; }
+  .dash-tab.active, .dash-tab:hover { background:rgba(201,168,76,.15); color:var(--gold); border-color:var(--gold); }
+  .dash-panel { display:none; overflow-x:auto; }
+  .dash-panel.active { display:block; }
+  .dash-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .dash-table th { text-align:left; padding:10px 12px; background:rgba(201,168,76,.1); color:var(--gold); font-weight:600; border-bottom:1px solid var(--border); white-space:nowrap; }
+  .dash-table td { padding:9px 12px; border-bottom:1px solid rgba(201,168,76,.07); color:var(--text-muted); vertical-align:top; white-space:nowrap; }
+  .dash-table tr:hover td { background:rgba(201,168,76,.04); }
+  .ref-badge { font-family:monospace; font-size:11px; padding:2px 8px; border-radius:6px; background:rgba(201,168,76,.1); color:var(--gold); border:1px solid var(--border); }
+  .wa-link { color:#25D366; text-decoration:none; }
+  .wa-link:hover { text-decoration:underline; }
+
+  /* SETUP GUIDE */
+  .setup-card { background:rgba(201,168,76,.06); border:1px solid var(--border); border-radius:16px; padding:24px; margin-bottom:20px; }
+  .setup-step { display:flex; gap:16px; align-items:flex-start; margin-bottom:16px; }
+  .step-num { min-width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#0A0F1E; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  .step-body h4 { font-size:14px; font-weight:600; margin-bottom:4px; }
+  .step-body p  { font-size:12px; color:var(--text-muted); line-height:1.5; }
+  code { background:rgba(201,168,76,.15); color:var(--gold); padding:2px 8px; border-radius:5px; font-size:11px; font-family:monospace; }
+  .code-block { background:rgba(10,15,30,.8); border:1px solid var(--border); border-radius:12px; padding:16px; font-family:monospace; font-size:11px; color:#a8d8a8; line-height:1.7; margin:10px 0; overflow-x:auto; white-space:pre; }
+
+  /* FOOTER */
+  footer { border-top:1px solid var(--border); padding:28px 48px; text-align:center; color:var(--text-muted); font-size:12px; margin-top:60px; }
+  footer span { color:var(--gold); }
+  footer a { color:var(--text-muted); text-decoration:none; }
+  footer a:hover { color:var(--gold); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .fade-up  { animation:fadeUp .5s ease forwards; }
+  .fade-up-2{ animation:fadeUp .5s .1s ease both; }
+  .fade-up-3{ animation:fadeUp .5s .2s ease both; }
+
+  @media(max-width:768px) {
+    nav { padding:14px 18px; }
+    .nav-links .nav-btn:not(.primary):not([title]) { display:none; }
+    .hero { grid-template-columns:1fr; padding:50px 20px; }
+    .hero-visual { display:none; }
+    .role-grid { grid-template-columns:1fr; }
+    .form-row { grid-template-columns:1fr; }
+    .section { padding:36px 18px; }
+    .stats-bar { flex-wrap:wrap; }
+    .stat-item { min-width:50%; border-bottom:1px solid var(--border); }
+    .form-container { padding:28px 20px; }
+  }
+  /* NEW SECTIONS */
+  .news-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+  .news-card { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:all .25s; cursor:pointer; }
+  .news-card:hover { border-color:var(--gold); transform:translateY(-3px); }
+  .news-img { width:100%; height:160px; background:linear-gradient(135deg,var(--navy-mid),var(--navy-light)); display:flex; align-items:center; justify-content:center; font-size:48px; }
+  .news-body { padding:20px; }
+  .news-date { font-size:11px; color:var(--gold); margin-bottom:6px; letter-spacing:1px; }
+  .news-title { font-size:15px; font-weight:600; margin-bottom:8px; }
+  .news-excerpt { font-size:12px; color:var(--text-muted); line-height:1.6; }
+  .news-tag { display:inline-block; padding:3px 10px; border-radius:12px; font-size:10px; background:rgba(201,168,76,.1); border:1px solid var(--border); color:var(--gold); margin-top:10px; }
+
+  .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+  .gallery-item { border-radius:14px; overflow:hidden; border:1px solid var(--border); aspect-ratio:4/3; background:linear-gradient(135deg,var(--navy-mid),var(--navy-light)); display:flex; align-items:center; justify-content:center; font-size:52px; cursor:pointer; transition:all .25s; position:relative; }
+  .gallery-item:hover { border-color:var(--gold); transform:scale(1.02); }
+  .gallery-label { position:absolute; bottom:0; left:0; right:0; padding:10px; background:linear-gradient(transparent,rgba(0,0,0,.7)); font-size:12px; font-weight:500; }
+
+  .results-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; }
+  .result-card { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:22px; text-align:center; transition:all .25s; }
+  .result-card:hover { border-color:var(--gold); transform:translateY(-3px); }
+  .result-grade { font-family:'Playfair Display',serif; font-size:42px; color:var(--gold); font-weight:900; }
+  .result-name { font-size:15px; font-weight:600; margin:8px 0 4px; }
+  .result-subject { font-size:12px; color:var(--text-muted); margin-bottom:6px; }
+  .result-year { font-size:11px; color:var(--gold); letter-spacing:1px; }
+
+  .resource-tabs { display:flex; gap:8px; margin-bottom:28px; flex-wrap:wrap; }
+  .resource-tab { padding:9px 20px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-muted); transition:all .2s; }
+  .resource-tab.active { background:rgba(201,168,76,.15); color:var(--gold); border-color:var(--gold); }
+  .resource-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+  .resource-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:20px; display:flex; gap:14px; align-items:flex-start; transition:all .25s; cursor:pointer; }
+  .resource-card:hover { border-color:var(--gold); transform:translateY(-2px); }
+  .resource-icon { font-size:28px; min-width:36px; }
+  .resource-title { font-size:14px; font-weight:600; margin-bottom:4px; }
+  .resource-meta { font-size:11px; color:var(--text-muted); }
+  .resource-badge { display:inline-block; padding:2px 8px; border-radius:8px; font-size:10px; margin-top:6px; font-weight:600; }
+  .badge-free { background:rgba(46,204,113,.15); color:var(--success); border:1px solid rgba(46,204,113,.3); }
+  .badge-new  { background:rgba(201,168,76,.15); color:var(--gold); border:1px solid var(--border); }
+
+  /* Admin post form */
+  .admin-post-btn { display:none; }
+  .admin-mode .admin-post-btn { display:inline-flex; }
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">
+    <div class="logo-icon">A</div>
+    <div>
+      <div class="logo-text">AMICS</div>
+      <div class="logo-sub">Commerce &amp; Science</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn ghost" onclick="showPage('home')">Home</button>
+    <button class="nav-btn ghost" onclick="showPage('tutors')">Find a Tutor</button>
+    <button class="nav-btn ghost" onclick="showPage('enroll')">Enroll</button>
+    <button class="nav-btn ghost" onclick="showPage('news')">📰 News</button>
+    <button class="nav-btn ghost" onclick="showPage('resources')">📚 Resources</button>
+    <button class="nav-btn primary" onclick="showPage('contact')">Contact Director</button>
+    <button class="nav-btn ghost" onclick="showDashboard()" style="font-size:17px;padding:8px 11px" title="Director Login">🔐</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow fade-up">🌟 Trusted Home Tutoring Network</div>
+      <h1 class="fade-up-2">Quality Education<br><span>At Your Doorstep</span></h1>
+      <p class="fade-up-3">AMICS connects students with verified, expert home tutors across Mathematics, Business, Sciences, and more — wherever you are in the world.</p>
+      <div class="hero-ctas fade-up-3">
+        <button class="btn-lg btn-gold" onclick="showPage('enroll')">📝 Enroll Now</button>
+        <button class="btn-lg btn-outline" onclick="showPage('tutors')">🔍 Browse Tutors</button>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+        <button onclick="showPage('news')" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:0">📰 Announcements →</button>
+        <button onclick="showPage('resources')" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:0">📄 Past Papers →</button>
+        <button onclick="showPage('resources');setTimeout(()=>switchResTab('books'),100)" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:0">📖 Books →</button>
+        <button onclick="showPage('resources');setTimeout(()=>switchResTab('results'),100)" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:0">🏆 Results →</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card-stack">
+        <div class="stat-card"><div class="stat-num">850+</div><div class="stat-lbl">Verified Tutors</div></div>
+        <div class="stat-card"><div class="stat-num">4.9★</div><div class="stat-lbl">Average Rating</div></div>
+        <div class="stat-card">
+          <div><span class="online-dot"></span><span style="font-size:11px;color:var(--success)">LIVE</span></div>
+          <div class="stat-num" style="font-size:22px;margin-top:4px">2,400+</div>
+          <div class="stat-lbl">Students Enrolled</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="num">850+</div><div class="lbl">Expert Tutors</div></div>
+    <div class="stat-item"><div class="num">2,400+</div><div class="lbl">Students Enrolled</div></div>
+    <div class="stat-item"><div class="num">40+</div><div class="lbl">Subjects Covered</div></div>
+    <div class="stat-item"><div class="num">60+</div><div class="lbl">Cities Served</div></div>
+    <div class="stat-item"><div class="num">98%</div><div class="lbl">Parent Satisfaction</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Why Choose <span>AMICS?</span></div>
+    <div class="section-sub">We bridge the gap between exceptional tutors and eager learners — at home, on demand.</div>
+    <div class="cards-grid">
+      <div class="feature-card"><div class="card-icon">🏠</div><h3>Home Delivery Tutoring</h3><p>Our tutors come directly to your home — no commute, no distractions. Learning happens in a comfortable, familiar environment.</p></div>
+      <div class="feature-card"><div class="card-icon">✅</div><h3>Verified &amp; Vetted Tutors</h3><p>Every tutor passes a rigorous screening process including qualification checks, background verification, and trial sessions.</p></div>
+      <div class="feature-card"><div class="card-icon">🌍</div><h3>Global Reach</h3><p>Parents and students from anywhere in the world can connect, enroll, and get matched with the right tutor.</p></div>
+      <div class="feature-card"><div class="card-icon">📊</div><h3>Business &amp; Maths Focus</h3><p>Specialized expertise in Business Studies, Mathematics, Accounts, Economics, Statistics, and related disciplines.</p></div>
+      <div class="feature-card"><div class="card-icon">🤝</div><h3>Director-Led Matching</h3><p>The school director personally reviews and matches students with the most suitable tutor for their goals and location.</p></div>
+      <div class="feature-card"><div class="card-icon">📱</div><h3>Easy Online Enrollment</h3><p>Parents and tutors can enroll independently online — quick, paperless, and accessible 24/7 from any device.</p></div>
+    </div>
+  </div>
+
+  <div class="section" style="text-align:center">
+    <div class="section-title">Ready to <span>Get Started?</span></div>
+    <div class="section-sub">Whether you need a tutor or want to become one — join AMICS today.</div>
+    <div class="role-grid">
+      <div class="role-card" onclick="showPage('enroll-parent')">
+        <div class="role-emoji">👨‍👩‍👧</div>
+        <h3>I'm a Parent / Student</h3>
+        <p>Find a qualified home tutor in your area, matched to your subject, level, and schedule.</p>
+        <span class="tag">Student Enrollment →</span>
+      </div>
+      <div class="role-card" onclick="showPage('enroll-teacher')">
+        <div class="role-emoji">👨‍🏫</div>
+        <h3>I'm a Tutor / Teacher</h3>
+        <p>Join our network of professional tutors. Get matched with students and start earning.</p>
+        <span class="tag">Tutor Registration →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WhatsApp floating button -->
+  <a href="https://wa.me/923205758265" target="_blank" style="position:fixed;bottom:28px;right:28px;z-index:150;background:#25D366;color:#fff;border-radius:50px;padding:14px 22px;font-size:15px;font-weight:600;text-decoration:none;box-shadow:0 6px 24px rgba(37,211,102,.4);display:flex;align-items:center;gap:8px;transition:transform .2s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+    💬 WhatsApp Us
+  </a>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ENROLL CHOOSE
+══════════════════════════════════════════ -->
+<div id="page-enroll" class="page">
+  <div class="form-page">
+    <div style="text-align:center;max-width:800px;margin:0 auto;padding:0 20px">
+      <div class="section-title" style="margin-bottom:8px">Create Your <span>Account</span></div>
+      <div class="section-sub" style="margin-bottom:36px">Select your role to get started with AMICS Tutoring Platform</div>
+      <div class="role-grid">
+        <div class="role-card" onclick="showPage('enroll-parent')">
+          <div class="role-emoji">👨‍👩‍👧</div><h3>Parent / Student</h3>
+          <p>Looking for a home tutor for your child or yourself. We'll find the perfect match.</p>
+          <span class="tag">Enroll as Student →</span>
+        </div>
+        <div class="role-card" onclick="showPage('enroll-teacher')">
+          <div class="role-emoji">👨‍🏫</div><h3>Tutor / Teacher</h3>
+          <p>Join our tutor network and start teaching students in your city or online.</p>
+          <span class="tag">Register as Tutor →</span>
+        </div>
+      </div>
+      <button class="form-back" onclick="showPage('home')" style="margin:26px auto 0;display:flex">← Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PARENT ENROLLMENT
+══════════════════════════════════════════ -->
+<div id="page-enroll-parent" class="page">
+  <div class="form-page">
+    <div class="form-container">
+      <button class="form-back" onclick="showPage('enroll')">← Back</button>
+      <div id="parent-form-body">
+        <div class="form-header">
+          <div class="badge">👨‍👩‍👧 Student / Parent Enrollment</div>
+          <h2>Find Your Perfect Tutor</h2>
+          <p>Fill in the details and our director will match you with the best available tutor within 24 hours.</p>
+        </div>
+        <div class="form-group form-row">
+          <div><label>Parent's Full Name *</label><input type="text" id="p-parent-name" placeholder="e.g. Ahmed Khan"></div>
+          <div><label>Student's Name *</label><input type="text" id="p-student-name" placeholder="e.g. Sara Khan"></div>
+        </div>
+        <div class="form-group form-row">
+          <div><label>Email Address *</label><input type="email" id="p-email" placeholder="your@email.com"></div>
+          <div><label>WhatsApp / Phone *</label><input type="text" id="p-phone" placeholder="+1 234 567 8900"></div>
+        </div>
+        <div class="form-group form-row">
+          <div><label>Country *</label><input type="text" id="p-country" placeholder="e.g. Pakistan / UAE / UK"></div>
+          <div><label>City / Area *</label><input type="text" id="p-city" placeholder="e.g. Karachi, DHA Phase 5"></div>
+        </div>
+        <div class="form-group">
+          <label>Student's Class / Level *</label>
+          <select id="p-level">
+            <option value="">— Select Level —</option>
+            <option>Primary (Grade 1–5)</option>
+            <option>Middle School (Grade 6–8)</option>
+            <option>O-Level / Grade 9–10</option>
+            <option>A-Level / Grade 11–12</option>
+            <option>Undergraduate</option>
+            <option>Postgraduate</option>
+            <option>Professional / Adult</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Subjects Needed</label>
+          <div class="checkbox-group" id="p-subjects">
+            <span class="chip" onclick="toggleChip(this)">Mathematics</span>
+            <span class="chip" onclick="toggleChip(this)">Business Studies</span>
+            <span class="chip" onclick="toggleChip(this)">Accounts</span>
+            <span class="chip" onclick="toggleChip(this)">Economics</span>
+            <span class="chip" onclick="toggleChip(this)">Statistics</span>
+            <span class="chip" onclick="toggleChip(this)">Physics</span>
+            <span class="chip" onclick="toggleChip(this)">Chemistry</span>
+            <span class="chip" onclick="toggleChip(this)">English</span>
+            <span class="chip" onclick="toggleChip(this)">Computer Science</span>
+            <span class="chip" onclick="toggleChip(this)">Urdu</span>
+          </div>
+        </div>
+        <div class="form-group form-row">
+          <div>
+            <label>Preferred Schedule</label>
+            <select id="p-schedule">
+              <option value="">— Select —</option>
+              <option>Weekday Mornings</option>
+              <option>Weekday Afternoons</option>
+              <option>Weekday Evenings</option>
+              <option>Weekends Only</option>
+              <option>Flexible</option>
+            </select>
+          </div>
+          <div>
+            <label>Preferred Mode</label>
+            <select id="p-mode">
+              <option value="">— Select —</option>
+              <option>At Home (In-person)</option>
+              <option>Online</option>
+              <option>Hybrid</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Additional Notes</label>
+          <textarea id="p-notes" placeholder="Any specific requirements, exam dates, or special needs..."></textarea>
+        </div>
+        <button class="submit-btn" id="parent-submit-btn" onclick="submitParent()">Submit Enrollment Request 🎓</button>
+      </div>
+      <div id="parent-success" class="success-screen" style="display:none">
+        <div class="success-icon">🎉</div>
+        <h2>Enrollment Submitted!</h2>
+        <p>Thank you! Our director will review your request and reach out within <strong>24 hours</strong> to match you with the ideal tutor.</p>
+        <div class="success-id" id="parent-ref-id">REF: OSB-00000</div>
+        <p style="margin-top:14px">Save your reference number. You'll be contacted via WhatsApp or email.</p>
+        <a href="https://wa.me/923205758265?text=Hello%2C%20I%20just%20enrolled%20at%20AMICS%20and%20my%20reference%20number%20is%20" target="_blank" style="display:inline-block;margin-top:18px;padding:12px 24px;background:#25D366;color:#fff;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none">💬 Confirm via WhatsApp</a>
+        <br><button class="submit-btn" style="margin-top:14px" onclick="showPage('home')">Back to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TEACHER ENROLLMENT
+══════════════════════════════════════════ -->
+<div id="page-enroll-teacher" class="page">
+  <div class="form-page">
+    <div class="form-container">
+      <button class="form-back" onclick="showPage('enroll')">← Back</button>
+      <div id="teacher-form-body">
+        <div class="form-header">
+          <div class="badge">👨‍🏫 Tutor / Teacher Registration</div>
+          <h2>Join Our Tutor Network</h2>
+          <p>Register your profile and start receiving student matches from AMICS.</p>
+        </div>
+        <div class="form-group form-row">
+          <div><label>Full Name *</label><input type="text" id="t-name" placeholder="Your full name"></div>
+          <div>
+            <label>Gender</label>
+            <select id="t-gender">
+              <option value="">— Select —</option>
+              <option>Male</option><option>Female</option><option>Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group form-row">
+          <div><label>Email Address *</label><input type="email" id="t-email" placeholder="your@email.com"></div>
+          <div><label>WhatsApp / Phone *</label><input type="text" id="t-phone" placeholder="+1 234 567 8900"></div>
+        </div>
+        <div class="form-group form-row">
+          <div><label>Country *</label><input type="text" id="t-country" placeholder="e.g. Pakistan / UAE"></div>
+          <div><label>City / Area *</label><input type="text" id="t-city" placeholder="e.g. Lahore, Gulberg"></div>
+        </div>
+        <div class="form-group">
+          <label>Highest Qualification *</label>
+          <select id="t-qualification">
+            <option value="">— Select —</option>
+            <option>Bachelor's Degree</option><option>Master's Degree</option>
+            <option>PhD / Doctorate</option><option>MPhil</option>
+            <option>ACCA / CA / Professional</option><option>O/A Level Qualified</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Subjects You Can Teach</label>
+          <div class="checkbox-group" id="t-subjects">
+            <span class="chip" onclick="toggleChip(this)">Mathematics</span>
+            <span class="chip" onclick="toggleChip(this)">Business Studies</span>
+            <span class="chip" onclick="toggleChip(this)">Accounts</span>
+            <span class="chip" onclick="toggleChip(this)">Economics</span>
+            <span class="chip" onclick="toggleChip(this)">Statistics</span>
+            <span class="chip" onclick="toggleChip(this)">Physics</span>
+            <span class="chip" onclick="toggleChip(this)">Chemistry</span>
+            <span class="chip" onclick="toggleChip(this)">English</span>
+            <span class="chip" onclick="toggleChip(this)">Computer Science</span>
+            <span class="chip" onclick="toggleChip(this)">Urdu</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Levels You Can Teach</label>
+          <div class="checkbox-group" id="t-levels">
+            <span class="chip" onclick="toggleChip(this)">Primary</span>
+            <span class="chip" onclick="toggleChip(this)">Middle School</span>
+            <span class="chip" onclick="toggleChip(this)">O-Level</span>
+            <span class="chip" onclick="toggleChip(this)">A-Level</span>
+            <span class="chip" onclick="toggleChip(this)">Undergraduate</span>
+            <span class="chip" onclick="toggleChip(this)">Postgraduate</span>
+          </div>
+        </div>
+        <div class="form-group form-row">
+          <div>
+            <label>Years of Experience</label>
+            <select id="t-experience">
+              <option value="">— Select —</option>
+              <option>Less than 1 year</option><option>1–2 years</option>
+              <option>3–5 years</option><option>5–10 years</option><option>10+ years</option>
+            </select>
+          </div>
+          <div>
+            <label>Preferred Mode</label>
+            <select id="t-mode">
+              <option value="">— Select —</option>
+              <option>At Home (In-person)</option><option>Online</option><option>Both</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Fee Expectation (per hour)</label>
+          <input type="text" id="t-fee" placeholder="e.g. PKR 1500, USD 20, AED 50">
+        </div>
+        <div class="form-group">
+          <label>Brief Bio / Introduction</label>
+          <textarea id="t-bio" placeholder="Tell students and parents about your teaching style, experience, and achievements..."></textarea>
+        </div>
+        <button class="submit-btn" id="teacher-submit-btn" onclick="submitTeacher()">Submit Tutor Application 📚</button>
+      </div>
+      <div id="teacher-success" class="success-screen" style="display:none">
+        <div class="success-icon">🏆</div>
+        <h2>Application Received!</h2>
+        <p>Welcome to the AMICS network! Our director will review your profile and contact you within <strong>48 hours</strong>.</p>
+        <div class="success-id" id="teacher-ref-id">REF: OST-00000</div>
+        <a href="https://wa.me/923205758265?text=Hello%2C%20I%20just%20applied%20as%20a%20tutor%20at%20Oasis%20School." target="_blank" style="display:inline-block;margin-top:18px;padding:12px 24px;background:#25D366;color:#fff;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none">💬 Confirm via WhatsApp</a>
+        <br><button class="submit-btn" style="margin-top:14px" onclick="showPage('home')">Back to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TUTOR DIRECTORY
+══════════════════════════════════════════ -->
+<div id="page-tutors" class="page">
+  <div class="section">
+    <div class="section-title">Our <span>Tutor Directory</span></div>
+    <div class="section-sub">Browse our verified tutors — filter by subject, level, or location</div>
+    <div class="search-bar">
+      <input class="search-input" id="tutor-search" placeholder="🔍 Search by name or subject..." oninput="filterTutors()">
+      <select class="filter-select" id="tutor-filter-subject" onchange="filterTutors()">
+        <option value="">All Subjects</option>
+        <option>Mathematics</option><option>Business Studies</option><option>Accounts</option>
+        <option>Economics</option><option>Physics</option><option>Chemistry</option>
+        <option>English</option><option>Computer Science</option>
+      </select>
+      <select class="filter-select" id="tutor-filter-level" onchange="filterTutors()">
+        <option value="">All Levels</option>
+        <option>Primary</option><option>O-Level</option><option>A-Level</option><option>Undergraduate</option>
+      </select>
+    </div>
+    <div class="tutors-grid" id="tutors-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CONTACT PAGE
+══════════════════════════════════════════ -->
+<div id="page-contact" class="page">
+  <div class="form-page">
+    <div class="form-container">
+      <button class="form-back" onclick="showPage('home')">← Back</button>
+      <div id="contact-form-body">
+        <div class="form-header">
+          <div class="badge">📬 Contact Director</div>
+          <h2>Get In Touch</h2>
+          <p>Send a direct message to the AMICS director — or reach us instantly via WhatsApp.</p>
+        </div>
+        <a href="https://wa.me/923205758265" target="_blank" style="display:flex;align-items:center;gap:10px;padding:14px 18px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);border-radius:12px;margin-bottom:22px;text-decoration:none;color:var(--text);transition:background .2s" onmouseover="this.style.background='rgba(37,211,102,.18)'" onmouseout="this.style.background='rgba(37,211,102,.1)'">
+          <span style="font-size:24px">💬</span>
+          <div><div style="font-weight:600;font-size:14px">WhatsApp: +92 320 5758265</div><div style="font-size:12px;color:var(--text-muted)">Tap to open WhatsApp chat now</div></div>
+        </a>
+        <a href="mailto:Oasis.edu.pk@gmail.com" style="display:flex;align-items:center;gap:10px;padding:14px 18px;background:rgba(201,168,76,.08);border:1px solid var(--border);border-radius:12px;margin-bottom:22px;text-decoration:none;color:var(--text);transition:background .2s" onmouseover="this.style.background='rgba(201,168,76,.16)'" onmouseout="this.style.background='rgba(201,168,76,.08)'">
+          <span style="font-size:24px">📧</span>
+          <div><div style="font-weight:600;font-size:14px">Oasis.edu.pk@gmail.com</div><div style="font-size:12px;color:var(--text-muted)">Tap to send an email</div></div>
+        </a>
+        <div style="text-align:center;color:var(--text-muted);font-size:12px;margin-bottom:18px">— or send a message below —</div>
+        <div class="form-group form-row">
+          <div><label>Your Name *</label><input type="text" id="c-name" placeholder="Full name"></div>
+          <div><label>WhatsApp / Phone *</label><input type="text" id="c-phone" placeholder="+X XXX XXX XXXX"></div>
+        </div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="c-email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label>Country / Location</label>
+          <input type="text" id="c-location" placeholder="e.g. Dubai, UAE">
+        </div>
+        <div class="form-group">
+          <label>Reason for Contact</label>
+          <select id="c-reason">
+            <option value="">— Select —</option>
+            <option>Need a Home Tutor</option><option>Want to Join as Tutor</option>
+            <option>Partnership / Collaboration</option><option>Feedback / Complaint</option><option>General Inquiry</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea id="c-message" placeholder="Write your message here..." style="min-height:110px"></textarea>
+        </div>
+        <button class="submit-btn" id="contact-submit-btn" onclick="submitContact()">Send Message 📩</button>
+      </div>
+      <div id="contact-success" class="success-screen" style="display:none">
+        <div class="success-icon">📬</div>
+        <h2>Message Sent!</h2>
+        <p>The director has received your message and will get back to you via WhatsApp or email within <strong>24 hours</strong>.</p>
+        <button class="submit-btn" style="margin-top:24px" onclick="showPage('home')">Back to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DIRECTOR DASHBOARD
+══════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px">
+      <div>
+        <div class="section-title" style="text-align:left;margin-bottom:4px">Director <span>Dashboard</span></div>
+        <div style="color:var(--text-muted);font-size:13px">All enrollments saved to your Google Sheet — live</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="nav-btn primary" onclick="loadDashboard()">🔄 Refresh</button>
+        <button class="nav-btn ghost" onclick="showPage('setup')">⚙️ Setup</button>
+        <button class="nav-btn ghost" onclick="showPage('home')">← Exit</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px">
+      <div class="feature-card" style="text-align:center"><div style="font-size:34px;font-family:'Playfair Display',serif;color:var(--gold)" id="dash-count-students">—</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">Student Enrollments</div></div>
+      <div class="feature-card" style="text-align:center"><div style="font-size:34px;font-family:'Playfair Display',serif;color:var(--gold)" id="dash-count-tutors">—</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">Tutor Registrations</div></div>
+      <div class="feature-card" style="text-align:center"><div style="font-size:34px;font-family:'Playfair Display',serif;color:var(--gold)" id="dash-count-messages">—</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">Contact Messages</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:10px">
+      <button class="dash-tab active" id="tab-students"  onclick="switchDashTab('students')">👨‍👩‍👧 Students</button>
+      <button class="dash-tab"        id="tab-tutors"    onclick="switchDashTab('tutors')">👨‍🏫 Tutors</button>
+      <button class="dash-tab"        id="tab-messages"  onclick="switchDashTab('messages')">📬 Messages</button>
+    </div>
+    <div class="dash-panel active" id="panel-students"><div id="dash-students"><p style="color:var(--text-muted);padding:30px;text-align:center">Click 🔄 Refresh to load data</p></div></div>
+    <div class="dash-panel"        id="panel-tutors"><div id="dash-tutors"></div></div>
+    <div class="dash-panel"        id="panel-messages"><div id="dash-messages"></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SETUP GUIDE PAGE
+══════════════════════════════════════════ -->
+<div id="page-setup" class="page">
+  <div class="section" style="max-width:760px">
+    <button class="form-back" onclick="showPage('home')">← Back to Home</button>
+    <div class="section-title" style="text-align:left;margin-bottom:6px">⚙️ Google Sheets <span>Setup Guide</span></div>
+    <div style="color:var(--text-muted);font-size:14px;margin-bottom:32px">Follow these steps once — takes about 10 minutes. No payment needed. 100% free.</div>
+
+    <div class="setup-card">
+      <div class="setup-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Create a Google Sheet</h4>
+          <p>Go to <strong>sheets.google.com</strong> → Create a new blank spreadsheet → Name it <code>AMICS Enrollments</code>. You'll need 3 tabs: <code>Students</code>, <code>Tutors</code>, <code>Messages</code>.</p>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Open Apps Script</h4>
+          <p>Inside your Google Sheet, click <strong>Extensions → Apps Script</strong>. Delete any existing code and paste the script below:</p>
+          <div class="code-block">function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet();
+  var data  = JSON.parse(e.postData.contents);
+  var tab   = sheet.getSheetByName(data.sheet) ||
+              sheet.insertSheet(data.sheet);
+  if (tab.getLastRow() === 0) {
+    tab.appendRow(Object.keys(data.row));
+  }
+  tab.appendRow(Object.values(data.row));
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet() {
+  return ContentService
+    .createTextOutput('AMICS API is running.')
+    .setMimeType(ContentService.MimeType.TEXT);
+}</div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Deploy as Web App</h4>
+          <p>Click <strong>Deploy → New Deployment → Web App</strong>. Set <em>Execute as</em>: <code>Me</code> and <em>Who has access</em>: <code>Anyone</code>. Click Deploy → Copy the Web App URL.</p>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Paste URL into this file</h4>
+          <p>Open this HTML file in any text editor (Notepad, VS Code). Find this line near the top of the &lt;script&gt; section:</p>
+          <div class="code-block">const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxwZE9Rn20k1JlhV-vfNND8XVx22LjXgn_t4KOTiYrgT_9WhzLoFDKCI4bVYDWqyOl1mQ/exec';</div>
+          <p>Replace <code>https://script.google.com/macros/s/AKfycbxwZE9Rn20k1JlhV-vfNND8XVx22LjXgn_t4KOTiYrgT_9WhzLoFDKCI4bVYDWqyOl1mQ/exec</code> with the URL you copied. Save the file. Done! ✅</p>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Host the file for free</h4>
+          <p>Go to <strong>netlify.com</strong> → drag and drop this HTML file → your site is live in seconds at a free URL. Buy a domain from <strong>Namecheap.com</strong> (~$10/yr) and connect it in Netlify settings.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:10px">
+      <a href="https://wa.me/923205758265?text=Hi%2C%20I%20need%20help%20setting%20up%20the%20Oasis%20School%20platform." target="_blank" style="display:inline-block;padding:13px 26px;background:#25D366;color:#fff;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none">💬 Need help? WhatsApp us</a>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Tutor Modal -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="form-header">
+      <div class="badge">📩 Contact Tutor</div>
+      <h2 id="modal-tutor-name">Send Request</h2>
+      <p>Send a request to the director to connect you with this tutor.</p>
+    </div>
+    <div class="form-group"><label>Your Name *</label><input type="text" id="m-name" placeholder="Your full name"></div>
+    <div class="form-group"><label>WhatsApp / Phone *</label><input type="text" id="m-phone" placeholder="+X XXX XXX XXXX"></div>
+    <div class="form-group"><label>Message</label><textarea id="m-message" placeholder="I'm interested in lessons for..."></textarea></div>
+    <button class="submit-btn" id="modal-submit-btn" onclick="submitModalContact()">Send Request</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     NEWS & ANNOUNCEMENTS PAGE
+══════════════════════════════════════════ -->
+<div id="page-news" class="page">
+  <div class="section">
+    <div class="section-title">📰 News & <span>Announcements</span></div>
+    <div class="section-sub">Latest updates, events and announcements from AMICS</div>
+
+    <!-- Admin post button (only visible in dashboard mode) -->
+    <div style="text-align:right;margin-bottom:20px">
+      <button class="admin-post-btn nav-btn primary" onclick="showAddNews()">+ Add Announcement</button>
+    </div>
+
+    <!-- Add news form (hidden by default) -->
+    <div id="add-news-form" style="display:none;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:28px">
+      <h3 style="margin-bottom:16px;font-size:16px">➕ New Announcement</h3>
+      <div class="form-group"><label>Title *</label><input type="text" id="news-title-input" placeholder="Announcement title"></div>
+      <div class="form-group"><label>Category</label>
+        <select id="news-cat-input">
+          <option>📢 Announcement</option><option>🏆 Achievement</option>
+          <option>📅 Event</option><option>📝 Exam Notice</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Content *</label><textarea id="news-content-input" placeholder="Write your announcement here..." style="min-height:100px"></textarea></div>
+      <div style="display:flex;gap:10px">
+        <button class="submit-btn" style="max-width:160px" onclick="addNews()">Post ✅</button>
+        <button class="submit-btn" style="max-width:120px;background:rgba(201,168,76,.2);color:var(--gold)" onclick="document.getElementById('add-news-form').style.display='none'">Cancel</button>
+      </div>
+    </div>
+
+    <div class="news-grid" id="news-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     RESOURCES PAGE (Past Papers + Books + Gallery + Results)
+══════════════════════════════════════════ -->
+<div id="page-resources" class="page">
+  <div class="section">
+    <div class="section-title">📚 <span>Resources</span></div>
+    <div class="section-sub">Past Papers, Books, Gallery & Student Results — all in one place</div>
+
+    <div class="resource-tabs">
+      <button class="resource-tab active" id="rtab-papers"  onclick="switchResTab('papers')">📄 Past Papers</button>
+      <button class="resource-tab"        id="rtab-books"   onclick="switchResTab('books')">📖 Books</button>
+      <button class="resource-tab"        id="rtab-gallery" onclick="switchResTab('gallery')">🖼️ Gallery</button>
+      <button class="resource-tab"        id="rtab-results" onclick="switchResTab('results')">🏆 Results</button>
+    </div>
+
+    <!-- PAST PAPERS -->
+    <div id="rpanel-papers" class="resource-panel">
+      <div class="resource-grid">
+        <div class="resource-card" onclick="alert('Past paper download coming soon! Contact director via WhatsApp.')">
+          <div class="resource-icon">📄</div>
+          <div><div class="resource-title">Mathematics O-Level 2023</div><div class="resource-meta">Cambridge • Paper 1 & 2</div><span class="resource-badge badge-free">FREE</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Past paper download coming soon! Contact director via WhatsApp.')">
+          <div class="resource-icon">📄</div>
+          <div><div class="resource-title">Business Studies A-Level 2023</div><div class="resource-meta">Cambridge • Paper 1, 2 & 3</div><span class="resource-badge badge-free">FREE</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Past paper download coming soon! Contact director via WhatsApp.')">
+          <div class="resource-icon">📄</div>
+          <div><div class="resource-title">Economics A-Level 2022</div><div class="resource-meta">Cambridge • Full Set</div><span class="resource-badge badge-free">FREE</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Past paper download coming soon! Contact director via WhatsApp.')">
+          <div class="resource-icon">📄</div>
+          <div><div class="resource-title">Accounts O-Level 2023</div><div class="resource-meta">Cambridge • Paper 1 & 2</div><span class="resource-badge badge-new">NEW</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Past paper download coming soon! Contact director via WhatsApp.')">
+          <div class="resource-icon">📄</div>
+          <div><div class="resource-title">Physics O-Level 2022</div><div class="resource-meta">Cambridge • Paper 1, 2 & 3</div><span class="resource-badge badge-free">FREE</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Past paper download coming soon! Contact director via WhatsApp.')">
+          <div class="resource-icon">📄</div>
+          <div><div class="resource-title">Statistics A-Level 2023</div><div class="resource-meta">Cambridge • Full Set</div><span class="resource-badge badge-new">NEW</span></div>
+        </div>
+        <div class="resource-card" style="border-style:dashed;justify-content:center;text-align:center;cursor:default">
+          <div style="text-align:center;width:100%">
+            <div style="font-size:28px;margin-bottom:8px">💬</div>
+            <div class="resource-title">Need a specific paper?</div>
+            <div class="resource-meta" style="margin-bottom:10px">Contact us on WhatsApp</div>
+            <a href="https://wa.me/923205758265?text=Hi%2C%20I%20need%20a%20past%20paper" target="_blank" style="color:var(--gold);font-size:12px;font-weight:600">Request via WhatsApp →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKS -->
+    <div id="rpanel-books" class="resource-panel" style="display:none">
+      <div class="resource-grid">
+        <div class="resource-card" onclick="alert('Contact director to get this book.')">
+          <div class="resource-icon">📖</div>
+          <div><div class="resource-title">Cambridge IGCSE Mathematics</div><div class="resource-meta">By Ric Pimentel • 4th Edition</div><span class="resource-badge badge-free">Available</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Contact director to get this book.')">
+          <div class="resource-icon">📖</div>
+          <div><div class="resource-title">Business Studies A-Level</div><div class="resource-meta">By Peter Stimpson • 5th Edition</div><span class="resource-badge badge-free">Available</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Contact director to get this book.')">
+          <div class="resource-icon">📖</div>
+          <div><div class="resource-title">Economics for Cambridge</div><div class="resource-meta">By Colin Bamford • 3rd Edition</div><span class="resource-badge badge-free">Available</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Contact director to get this book.')">
+          <div class="resource-icon">📖</div>
+          <div><div class="resource-title">Principles of Accounts</div><div class="resource-meta">By Frankwood • Latest Edition</div><span class="resource-badge badge-new">NEW</span></div>
+        </div>
+        <div class="resource-card" onclick="alert('Contact director to get this book.')">
+          <div class="resource-icon">📖</div>
+          <div><div class="resource-title">Complete Physics</div><div class="resource-meta">By Stephen Pople • O-Level</div><span class="resource-badge badge-free">Available</span></div>
+        </div>
+        <div class="resource-card" style="border-style:dashed;cursor:default">
+          <div style="text-align:center;width:100%">
+            <div style="font-size:28px;margin-bottom:8px">💬</div>
+            <div class="resource-title">Need a specific book?</div>
+            <div class="resource-meta" style="margin-bottom:10px">Ask the director</div>
+            <a href="https://wa.me/923205758265?text=Hi%2C%20I%20need%20a%20book" target="_blank" style="color:var(--gold);font-size:12px;font-weight:600">Request via WhatsApp →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div id="rpanel-gallery" class="resource-panel" style="display:none">
+      <div class="gallery-grid">
+        <div class="gallery-item"><span>🎓</span><div class="gallery-label">Graduation Ceremony 2023</div></div>
+        <div class="gallery-item"><span>📚</span><div class="gallery-label">Study Session</div></div>
+        <div class="gallery-item"><span>🏆</span><div class="gallery-label">Award Distribution</div></div>
+        <div class="gallery-item"><span>👨‍🏫</span><div class="gallery-label">Tutor Training Day</div></div>
+        <div class="gallery-item"><span>📝</span><div class="gallery-label">Exam Preparation Workshop</div></div>
+        <div class="gallery-item"><span>🌟</span><div class="gallery-label">Top Achievers 2023</div></div>
+        <div class="gallery-item" style="border-style:dashed;font-size:32px;flex-direction:column;gap:8px" onclick="alert('Send your photos to Oasis.edu.pk@gmail.com to be featured!')">
+          <span>📸</span>
+          <div style="font-size:12px;color:var(--text-muted);text-align:center;padding:0 10px">Send your photos to be featured here</div>
+        </div>
+      </div>
+      <p style="text-align:center;color:var(--text-muted);font-size:12px;margin-top:20px">📸 Send photos to <a href="mailto:Oasis.edu.pk@gmail.com" style="color:var(--gold)">Oasis.edu.pk@gmail.com</a> to be featured in the gallery</p>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="rpanel-results" class="resource-panel" style="display:none">
+      <div class="results-grid" id="results-grid">
+        <div class="result-card"><div class="result-grade">A*</div><div class="result-name">Sara Ahmed</div><div class="result-subject">Mathematics O-Level</div><div class="result-year">2023 • Cambridge</div></div>
+        <div class="result-card"><div class="result-grade">A</div><div class="result-name">Ali Hassan</div><div class="result-subject">Business Studies A-Level</div><div class="result-year">2023 • Cambridge</div></div>
+        <div class="result-card"><div class="result-grade">A*</div><div class="result-name">Fatima Khan</div><div class="result-subject">Economics A-Level</div><div class="result-year">2023 • Cambridge</div></div>
+        <div class="result-card"><div class="result-grade">A</div><div class="result-name">Usman Malik</div><div class="result-subject">Accounts O-Level</div><div class="result-year">2023 • Cambridge</div></div>
+        <div class="result-card"><div class="result-grade">A*</div><div class="result-name">Ayesha Raza</div><div class="result-subject">Physics O-Level</div><div class="result-year">2023 • Cambridge</div></div>
+        <div class="result-card"><div class="result-grade">A</div><div class="result-name">Omar Sheikh</div><div class="result-subject">Statistics A-Level</div><div class="result-year">2023 • Cambridge</div></div>
+      </div>
+      <p style="text-align:center;margin-top:24px;color:var(--text-muted);font-size:13px">🏆 Achieved great results with AMICS tutors? <a href="https://wa.me/923205758265?text=I%20want%20to%20share%20my%20results!" target="_blank" style="color:var(--gold)">Share yours →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p><span>Abdul Mohaimin Institute of Commerce and Science</span> — Quality Home Tutoring, Delivered to Your Door</p>
+  <p style="margin-top:8px">
+    📧 <a href="mailto:Oasis.edu.pk@gmail.com">Oasis.edu.pk@gmail.com</a>
+    &nbsp;|&nbsp;
+    💬 <a href="https://wa.me/923205758265" target="_blank">WhatsApp: +92 320 5758265</a>
+    &nbsp;|&nbsp;
+    🌍 Serving Globally
+  </p>
+  <p style="margin-top:8px"><button onclick="showPage('setup')" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;text-decoration:underline">⚙️ Setup Guide</button></p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  GOOGLE SHEETS CONFIGURATION
+//  After following the Setup Guide, paste your
+//  Google Apps Script Web App URL below:
+// ══════════════════════════════════════════════════════
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxwZE9Rn20k1JlhV-vfNND8XVx22LjXgn_t4KOTiYrgT_9WhzLoFDKCI4bVYDWqyOl1mQ/exec';
+
+// Director dashboard password (change before going live!)
+const DIRECTOR_PASSWORD = 'amics2024';
+
+// ── Send data to Google Sheets ──
+async function sendToSheet(sheetName, row) {
+  if (SHEETS_URL === 'https://script.google.com/macros/s/AKfycbxwZE9Rn20k1JlhV-vfNND8XVx22LjXgn_t4KOTiYrgT_9WhzLoFDKCI4bVYDWqyOl1mQ/exec') {
+    console.warn('Google Sheets not configured yet. Data not saved.');
+    return; // still show success so UI works for demo
+  }
+  try {
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheet: sheetName, row })
+    });
+  } catch(e) {
+    console.error('Sheet save error:', e);
+  }
+}
+
+// ── Page router ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + id);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  if (id === 'tutors') renderTutors(tutors);
+}
+
+// ── Chip toggle ──
+function toggleChip(el) { el.classList.toggle('selected'); }
+function getChips(id) { return [...document.querySelectorAll('#'+id+' .chip.selected')].map(c=>c.textContent).join(', '); }
+
+// ── Button loading state ──
+function setBtnLoading(btn, loading, defaultText) {
+  btn.disabled = loading;
+  btn.textContent = loading ? '⏳ Saving...' : defaultText;
+}
+
+// ══ STUDENT ENROLLMENT ══
+async function submitParent() {
+  const parentName  = document.getElementById('p-parent-name').value.trim();
+  const studentName = document.getElementById('p-student-name').value.trim();
+  const email       = document.getElementById('p-email').value.trim();
+  const phone       = document.getElementById('p-phone').value.trim();
+  const country     = document.getElementById('p-country').value.trim();
+  const city        = document.getElementById('p-city').value.trim();
+  const level       = document.getElementById('p-level').value;
+  const subjects    = getChips('p-subjects');
+  const schedule    = document.getElementById('p-schedule').value;
+  const mode        = document.getElementById('p-mode').value;
+  const notes       = document.getElementById('p-notes').value.trim();
+
+  if (!parentName || !email || !phone || !city) {
+    alert('Please fill in all required fields (marked with *).'); return;
+  }
+  const ref = 'OSB-' + Math.floor(10000 + Math.random()*90000);
+  const btn = document.getElementById('parent-submit-btn');
+  setBtnLoading(btn, true, 'Submit Enrollment Request 🎓');
+
+  await sendToSheet('Students', {
+    'Reference': ref,
+    'Date': new Date().toLocaleString(),
+    'Parent Name': parentName,
+    'Student Name': studentName,
+    'Email': email,
+    'Phone / WhatsApp': phone,
+    'Country': country,
+    'City / Area': city,
+    'Level': level,
+    'Subjects': subjects,
+    'Schedule': schedule,
+    'Mode': mode,
+    'Notes': notes,
+    'Status': 'New'
+  });
+
+  setBtnLoading(btn, false, 'Submit Enrollment Request 🎓');
+  document.getElementById('parent-ref-id').textContent = 'REF: ' + ref;
+  // Update WhatsApp link with reference number
+  const waLink = document.querySelector('#parent-success a[href*="wa.me"]');
+  if (waLink) waLink.href = `https://wa.me/923205758265?text=Hello%2C%20I%20just%20enrolled%20at%20AMICS.%20My%20reference%20is%20${ref}.`;
+  document.getElementById('parent-form-body').style.display = 'none';
+  document.getElementById('parent-success').style.display = 'block';
+}
+
+// ══ TUTOR REGISTRATION ══
+async function submitTeacher() {
+  const name      = document.getElementById('t-name').value.trim();
+  const gender    = document.getElementById('t-gender').value;
+  const email     = document.getElementById('t-email').value.trim();
+  const phone     = document.getElementById('t-phone').value.trim();
+  const country   = document.getElementById('t-country').value.trim();
+  const city      = document.getElementById('t-city').value.trim();
+  const qual      = document.getElementById('t-qualification').value;
+  const subjects  = getChips('t-subjects');
+  const levels    = getChips('t-levels');
+  const exp       = document.getElementById('t-experience').value;
+  const mode      = document.getElementById('t-mode').value;
+  const fee       = document.getElementById('t-fee').value.trim();
+  const bio       = document.getElementById('t-bio').value.trim();
+
+  if (!name || !email || !phone || !city) {
+    alert('Please fill in all required fields (marked with *).'); return;
+  }
+  const ref = 'OST-' + Math.floor(10000 + Math.random()*90000);
+  const btn = document.getElementById('teacher-submit-btn');
+  setBtnLoading(btn, true, 'Submit Tutor Application 📚');
+
+  await sendToSheet('Tutors', {
+    'Reference': ref,
+    'Date': new Date().toLocaleString(),
+    'Full Name': name,
+    'Gender': gender,
+    'Email': email,
+    'Phone / WhatsApp': phone,
+    'Country': country,
+    'City / Area': city,
+    'Qualification': qual,
+    'Subjects': subjects,
+    'Levels': levels,
+    'Experience': exp,
+    'Mode': mode,
+    'Fee / Hour': fee,
+    'Bio': bio,
+    'Status': 'Pending Review'
+  });
+
+  setBtnLoading(btn, false, 'Submit Tutor Application 📚');
+  document.getElementById('teacher-ref-id').textContent = 'REF: ' + ref;
+  document.getElementById('teacher-form-body').style.display = 'none';
+  document.getElementById('teacher-success').style.display = 'block';
+}
+
+// ══ CONTACT MESSAGE ══
+async function submitContact() {
+  const name     = document.getElementById('c-name').value.trim();
+  const phone    = document.getElementById('c-phone').value.trim();
+  const email    = document.getElementById('c-email').value.trim();
+  const location = document.getElementById('c-location').value.trim();
+  const reason   = document.getElementById('c-reason').value;
+  const message  = document.getElementById('c-message').value.trim();
+
+  if (!name || !phone || !email || !message) {
+    alert('Please fill in all required fields.'); return;
+  }
+  const btn = document.getElementById('contact-submit-btn');
+  setBtnLoading(btn, true, 'Send Message 📩');
+
+  await sendToSheet('Messages', {
+    'Date': new Date().toLocaleString(),
+    'Name': name,
+    'Phone / WhatsApp': phone,
+    'Email': email,
+    'Location': location,
+    'Reason': reason,
+    'Message': message,
+    'Status': 'Unread'
+  });
+
+  setBtnLoading(btn, false, 'Send Message 📩');
+  document.getElementById('contact-form-body').style.display = 'none';
+  document.getElementById('contact-success').style.display = 'block';
+}
+
+// ══ TUTOR DIRECTORY ══
+const tutors = [
+  { name:'Dr. Fatima Malik',   subjects:['Mathematics','Statistics'],         levels:['O-Level','A-Level','Undergraduate'], city:'Karachi',    rating:'4.9', exp:'8 yrs',  mode:'Both',     fee:'PKR 2000/hr' },
+  { name:'Usman Tariq',        subjects:['Business Studies','Economics'],      levels:['O-Level','A-Level'],                 city:'Lahore',     rating:'4.8', exp:'5 yrs',  mode:'At Home',  fee:'PKR 1800/hr' },
+  { name:'Ayesha Raza',        subjects:['Mathematics','Physics'],             levels:['Primary','Middle School','O-Level'],  city:'Islamabad',  rating:'5.0', exp:'10 yrs', mode:'Online',   fee:'PKR 1500/hr' },
+  { name:'Hassan Ali',         subjects:['Accounts','Business Studies'],       levels:['A-Level','Undergraduate'],           city:'Dubai',      rating:'4.7', exp:'6 yrs',  mode:'Both',     fee:'AED 60/hr'   },
+  { name:'Sara Ahmed',         subjects:['English','Urdu'],                   levels:['Primary','Middle School'],           city:'Karachi',    rating:'4.9', exp:'4 yrs',  mode:'At Home',  fee:'PKR 1200/hr' },
+  { name:'Prof. Kamran Shah',  subjects:['Economics','Statistics'],            levels:['Undergraduate','Postgraduate'],      city:'Lahore',     rating:'4.8', exp:'15 yrs', mode:'Online',   fee:'PKR 3000/hr' },
+  { name:'Nadia Hussain',      subjects:['Chemistry','Biology'],              levels:['O-Level','A-Level'],                 city:'Rawalpindi', rating:'4.6', exp:'7 yrs',  mode:'At Home',  fee:'PKR 1600/hr' },
+  { name:'Omar Sheikh',        subjects:['Computer Science','Mathematics'],    levels:['O-Level','A-Level','Undergraduate'], city:'Karachi',    rating:'4.9', exp:'9 yrs',  mode:'Both',     fee:'PKR 2500/hr' },
+];
+
+function renderTutors(list) {
+  const grid = document.getElementById('tutors-grid');
+  if (!list.length) {
+    grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px">No tutors found matching your criteria.</p>';
+    return;
+  }
+  grid.innerHTML = list.map(t => `
+    <div class="tutor-card">
+      <div class="tutor-avatar">${t.name.charAt(0)}</div>
+      <div class="tutor-name">${t.name}</div>
+      <div class="tutor-subject">${t.subjects.join(' · ')}</div>
+      <div class="tutor-tags">
+        ${t.levels.map(l=>`<span class="tutor-tag">${l}</span>`).join('')}
+        <span class="tutor-tag">📍 ${t.city}</span>
+        <span class="tutor-tag">⏱ ${t.exp}</span>
+      </div>
+      <div class="tutor-meta">
+        <span class="rating">★ ${t.rating} | ${t.mode}</span>
+        <button class="contact-mini" onclick="openModal('${t.name}')">Contact →</button>
+      </div>
+      <div style="margin-top:9px;font-size:11px;color:var(--gold)">💰 ${t.fee}</div>
+    </div>`).join('');
+}
+
+function filterTutors() {
+  const q    = document.getElementById('tutor-search').value.toLowerCase();
+  const subj = document.getElementById('tutor-filter-subject').value;
+  const lvl  = document.getElementById('tutor-filter-level').value;
+  renderTutors(tutors.filter(t =>
+    (!q    || t.name.toLowerCase().includes(q) || t.subjects.join(' ').toLowerCase().includes(q)) &&
+    (!subj || t.subjects.includes(subj)) &&
+    (!lvl  || t.levels.some(l => l.includes(lvl)))
+  ));
+}
+
+// ══ CONTACT MODAL ══
+let currentTutor = '';
+function openModal(name) {
+  currentTutor = name;
+  document.getElementById('modal-tutor-name').textContent = name;
+  document.getElementById('contact-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('contact-modal').classList.remove('open'); }
+
+async function submitModalContact() {
+  const name  = document.getElementById('m-name').value.trim();
+  const phone = document.getElementById('m-phone').value.trim();
+  const msg   = document.getElementById('m-message').value.trim();
+  if (!name || !phone) { alert('Please fill in your name and phone number.'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  setBtnLoading(btn, true, 'Send Request');
+
+  await sendToSheet('Messages', {
+    'Date': new Date().toLocaleString(),
+    'Name': name,
+    'Phone / WhatsApp': phone,
+    'Email': '—',
+    'Location': '—',
+    'Reason': 'Tutor Request: ' + currentTutor,
+    'Message': msg || 'Interested in tutor',
+    'Status': 'Unread'
+  });
+
+  setBtnLoading(btn, false, 'Send Request');
+  closeModal();
+  alert(`✅ Request sent! The director will connect you with ${currentTutor} via WhatsApp shortly.`);
+  document.getElementById('m-name').value = '';
+  document.getElementById('m-phone').value = '';
+  document.getElementById('m-message').value = '';
+}
+
+document.getElementById('contact-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ══ DIRECTOR DASHBOARD ══
+function showDashboard() {
+  const pwd = prompt('🔐 Enter Director Password:');
+  if (!pwd || pwd !== DIRECTOR_PASSWORD) { if(pwd !== null) alert('❌ Incorrect password.'); return; }
+  showPage('dashboard');
+}
+
+function loadDashboard() {
+  // In live mode with Sheets, you'd read from the spreadsheet.
+  // Here we show a helpful message directing to the actual sheet.
+  const msg = SHEETS_URL === 'https://script.google.com/macros/s/AKfycbxwZE9Rn20k1JlhV-vfNND8XVx22LjXgn_t4KOTiYrgT_9WhzLoFDKCI4bVYDWqyOl1mQ/exec'
+    ? `<div style="text-align:center;padding:40px;color:var(--text-muted)">
+        <div style="font-size:40px;margin-bottom:12px">⚙️</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Google Sheets Not Configured Yet</div>
+        <div style="font-size:13px;margin-bottom:18px">Follow the Setup Guide to connect your Google Sheet. Once done, all enrollments will be saved there automatically.</div>
+        <button class="submit-btn" style="max-width:220px;margin:0 auto" onclick="showPage('setup')">⚙️ Open Setup Guide</button>
+      </div>`
+    : `<div style="text-align:center;padding:40px;color:var(--text-muted)">
+        <div style="font-size:40px;margin-bottom:12px">📊</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Data Saved to Google Sheets</div>
+        <div style="font-size:13px;margin-bottom:18px">Your enrollments are being saved directly to your Google Sheet. Open it to view all records.</div>
+        <a href="${SHEETS_URL.replace('/exec','')}" target="_blank" class="submit-btn" style="max-width:220px;margin:0 auto;display:inline-block;text-align:center;text-decoration:none">📊 Open Google Sheet</a>
+      </div>`;
+
+  // Show same msg in all panels for now
+  ['dash-students','dash-tutors','dash-messages'].forEach(id => {
+    document.getElementById(id).innerHTML = msg;
+  });
+  document.getElementById('dash-count-students').textContent = '—';
+  document.getElementById('dash-count-tutors').textContent   = '—';
+  document.getElementById('dash-count-messages').textContent = '—';
+}
+
+function switchDashTab(tab) {
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'   + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+// ══ NEWS & ANNOUNCEMENTS ══
+let newsItems = [
+  { title:'Welcome to AMICS Online Platform!', cat:'📢 Announcement', date:'March 2026', content:'We are excited to launch our new online platform where students and tutors can enroll directly. Parents worldwide can now find the perfect home tutor through amics.online.' },
+  { title:'Outstanding O-Level Results 2023', cat:'🏆 Achievement', date:'February 2026', content:'We are proud to announce that 95% of our students achieved A or A* grades in their Cambridge O-Level examinations. Congratulations to all students and tutors!' },
+  { title:'New Batch Starting — April 2026', cat:'📅 Event', date:'March 2026', content:'A new batch for O-Level and A-Level preparation is starting in April 2026. Limited seats available. Enroll now to secure your spot!' },
+  { title:'Past Papers Now Available', cat:'📝 Exam Notice', date:'March 2026', content:'Cambridge past papers for Mathematics, Business Studies, Economics, and Accounts are now available in our Resources section. Download for free!' },
+];
+
+function renderNews() {
+  const grid = document.getElementById('news-grid');
+  const icons = { '📢 Announcement':'📢', '🏆 Achievement':'🏆', '📅 Event':'📅', '📝 Exam Notice':'📝' };
+  grid.innerHTML = newsItems.map((n,i) => `
+    <div class="news-card">
+      <div class="news-img">${icons[n.cat]||'📰'}</div>
+      <div class="news-body">
+        <div class="news-date">${n.date}</div>
+        <div class="news-title">${n.title}</div>
+        <div class="news-excerpt">${n.content}</div>
+        <span class="news-tag">${n.cat}</span>
+      </div>
+    </div>`).join('');
+}
+
+function showAddNews() {
+  document.getElementById('add-news-form').style.display = 'block';
+}
+
+function addNews() {
+  const title   = document.getElementById('news-title-input').value.trim();
+  const cat     = document.getElementById('news-cat-input').value;
+  const content = document.getElementById('news-content-input').value.trim();
+  if (!title || !content) { alert('Please fill in title and content.'); return; }
+  newsItems.unshift({ title, cat, date: new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'}), content });
+  renderNews();
+  document.getElementById('add-news-form').style.display = 'none';
+  document.getElementById('news-title-input').value = '';
+  document.getElementById('news-content-input').value = '';
+}
+
+// ══ RESOURCES TAB ══
+function switchResTab(tab) {
+  document.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.resource-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('rtab-'   + tab).classList.add('active');
+  document.getElementById('rpanel-' + tab).style.display = 'block';
+}
+
+// Render news on page load
+document.addEventListener('DOMContentLoaded', () => { renderNews(); });
+</script>
