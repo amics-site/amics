@@ -749,8 +749,8 @@ function doGet() {
         <div class="step-body">
           <h4>Paste URL into this file</h4>
           <p>Open this HTML file in any text editor (Notepad, VS Code). Find this line near the top of the &lt;script&gt; section:</p>
-          <div class="code-block">const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyI8ZFslnu9r8CZ-23qR47JzqAJ388GSrh_rrmC-q8xzbKgxvCyXTOjaD2dyxTBGYIEWA/exec';</div>
-          <p>Replace <code>https://script.google.com/macros/s/AKfycbyI8ZFslnu9r8CZ-23qR47JzqAJ388GSrh_rrmC-q8xzbKgxvCyXTOjaD2dyxTBGYIEWA/exec</code> with the URL you copied. Save the file. Done! ✅</p>
+          <div class="code-block">const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyeX-7aK_QQ8r6-WReYLUXBNAPcGJRt4GvNkzPrU4bvzYhwNRH28sn4Jq_3IHHQTGagog/exec';</div>
+          <p>Replace <code>https://script.google.com/macros/s/AKfycbyeX-7aK_QQ8r6-WReYLUXBNAPcGJRt4GvNkzPrU4bvzYhwNRH28sn4Jq_3IHHQTGagog/exec</code> with the URL you copied. Save the file. Done! ✅</p>
         </div>
       </div>
       <div class="setup-step">
@@ -956,14 +956,14 @@ function doGet() {
 //  After following the Setup Guide, paste your
 //  Google Apps Script Web App URL below:
 // ══════════════════════════════════════════════════════
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyI8ZFslnu9r8CZ-23qR47JzqAJ388GSrh_rrmC-q8xzbKgxvCyXTOjaD2dyxTBGYIEWA/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyeX-7aK_QQ8r6-WReYLUXBNAPcGJRt4GvNkzPrU4bvzYhwNRH28sn4Jq_3IHHQTGagog/exec';
 
 // Director dashboard password (change before going live!)
 const DIRECTOR_PASSWORD = 'amics2024';
 
 // ── Send data to Google Sheets ──
 async function sendToSheet(sheetName, row) {
-  if (SHEETS_URL === 'https://script.google.com/macros/s/AKfycbyI8ZFslnu9r8CZ-23qR47JzqAJ388GSrh_rrmC-q8xzbKgxvCyXTOjaD2dyxTBGYIEWA/exec') {
+  if (SHEETS_URL === 'https://script.google.com/macros/s/AKfycbyeX-7aK_QQ8r6-WReYLUXBNAPcGJRt4GvNkzPrU4bvzYhwNRH28sn4Jq_3IHHQTGagog/exec') {
     console.warn('Google Sheets not configured yet. Data not saved.');
     return; // still show success so UI works for demo
   }
@@ -1220,7 +1220,7 @@ function showDashboard() {
 function loadDashboard() {
   // In live mode with Sheets, you'd read from the spreadsheet.
   // Here we show a helpful message directing to the actual sheet.
-  const msg = SHEETS_URL === 'https://script.google.com/macros/s/AKfycbyI8ZFslnu9r8CZ-23qR47JzqAJ388GSrh_rrmC-q8xzbKgxvCyXTOjaD2dyxTBGYIEWA/exec'
+  const msg = SHEETS_URL === 'https://script.google.com/macros/s/AKfycbyeX-7aK_QQ8r6-WReYLUXBNAPcGJRt4GvNkzPrU4bvzYhwNRH28sn4Jq_3IHHQTGagog/exec'
     ? `<div style="text-align:center;padding:40px;color:var(--text-muted)">
         <div style="font-size:40px;margin-bottom:12px">⚙️</div>
         <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Google Sheets Not Configured Yet</div>
