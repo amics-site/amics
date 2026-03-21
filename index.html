@@ -689,10 +689,25 @@
       <button class="dash-tab active" id="tab-students"  onclick="switchDashTab('students')">👨‍👩‍👧 Students</button>
       <button class="dash-tab"        id="tab-tutors"    onclick="switchDashTab('tutors')">👨‍🏫 Tutors</button>
       <button class="dash-tab"        id="tab-messages"  onclick="switchDashTab('messages')">📬 Messages</button>
+      <button class="dash-tab"        id="tab-feeslips"  onclick="switchDashTab('feeslips')">💰 Fee Slips</button>
     </div>
     <div class="dash-panel active" id="panel-students"><div id="dash-students"><p style="color:var(--text-muted);padding:30px;text-align:center">Click 🔄 Refresh to load data</p></div></div>
     <div class="dash-panel"        id="panel-tutors"><div id="dash-tutors"></div></div>
     <div class="dash-panel"        id="panel-messages"><div id="dash-messages"></div></div>
+    <div class="dash-panel"        id="panel-feeslips">
+      <div id="dash-feeslips">
+        <div style="text-align:center;padding:30px">
+          <div style="font-size:40px;margin-bottom:12px">💰</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:8px">Fee Slip Management</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">View and verify student fee slips submitted through amics.online</div>
+          <div id="fee-slips-list">
+            <p style="color:var(--text-muted);font-size:13px">Fee slips submitted during this session will appear here. Check Google Sheets for all records.</p>
+            <div id="fee-slips-table" style="margin-top:20px"></div>
+          </div>
+          <a href="https://docs.google.com/spreadsheets/d/11xpOARVvdp1cPsDmkjnDocpYW6ou5bW8T2fr7ZJEwmw" target="_blank" class="submit-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:16px;max-width:280px">📊 Open Google Sheets →</a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1123,7 +1138,10 @@ function doGet() {
           <p>Your fee slip has been received. Our director will verify your payment within <strong>24 hours</strong> and confirm via WhatsApp.</p>
           <div class="success-id" id="fs-ref-display">REF: FS-00000</div>
           <p style="margin-top:10px;font-size:13px;color:var(--text-muted)">Use this reference number to check your payment status anytime!</p>
-          <a href="https://wa.me/923205758265?text=Hi%2C%20I%20just%20uploaded%20my%20fee%20slip%20on%20amics.online" target="_blank" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#25D366;color:#fff;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none">💬 Confirm via WhatsApp</a>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+            <button onclick="downloadReceipt()" style="padding:12px 24px;background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));color:#0A0F1E;border:none;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer">📄 Download Receipt</button>
+            <a href="https://wa.me/923205758265?text=Hi%2C%20I%20just%20uploaded%20my%20fee%20slip%20on%20amics.online" target="_blank" style="display:inline-block;padding:12px 24px;background:#25D366;color:#fff;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none">💬 Confirm via WhatsApp</a>
+          </div>
           <br><button class="submit-btn" style="margin-top:14px;max-width:200px" onclick="resetFeeSlip()">Submit Another</button>
         </div>
       </div>
@@ -1463,6 +1481,47 @@ function switchDashTab(tab) {
   document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-'   + tab).classList.add('active');
   document.getElementById('panel-' + tab).classList.add('active');
+  if (tab === 'feeslips') renderDashFeeSlips();
+}
+
+function renderDashFeeSlips() {
+  const table = document.getElementById('fee-slips-table');
+  if (!feeSlipRecords.length) {
+    table.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No fee slips submitted in this session yet.</p>';
+    return;
+  }
+  table.innerHTML = `
+    <table class="dash-table">
+      <thead><tr><th>REF</th><th>Student</th><th>Phone</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${feeSlipRecords.map(r => `<tr>
+        <td><span class="ref-badge">${r.ref}</span></td>
+        <td>${r.student}</td>
+        <td><a href="https://wa.me/${(r.phone||'').replace(/\D/g,'')}" target="_blank" class="wa-link">📱 ${r.phone}</a></td>
+        <td style="color:var(--gold)">${r.amount}</td>
+        <td>${r.method}</td>
+        <td>${r.date}</td>
+        <td><span style="color:${r.status==='Verified'?'#2ECC71':r.status==='Rejected'?'#E74C3C':'#C9A84C'}">${r.status}</span></td>
+        <td>
+          <button onclick="updateFeeStatus('${r.ref}','Verified')" style="padding:4px 10px;background:rgba(46,204,113,0.2);border:1px solid #2ECC71;color:#2ECC71;border-radius:6px;font-size:11px;cursor:pointer;margin-right:4px">✅ Verify</button>
+          <button onclick="updateFeeStatus('${r.ref}','Rejected')" style="padding:4px 10px;background:rgba(231,76,60,0.2);border:1px solid #E74C3C;color:#E74C3C;border-radius:6px;font-size:11px;cursor:pointer">❌ Reject</button>
+        </td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function updateFeeStatus(ref, status) {
+  const record = feeSlipRecords.find(r => r.ref === ref);
+  if (record) {
+    record.status = status;
+    renderDashFeeSlips();
+    // Send WhatsApp notification to student
+    const msg = status === 'Verified'
+      ? `Hi! Your fee payment (${ref}) has been ✅ VERIFIED by AMICS. Thank you! — amics.online`
+      : `Hi! Your fee payment (${ref}) could not be verified. Please contact us. — amics.online`;
+    const waUrl = `https://wa.me/${(record.phone||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, '_blank');
+    alert(`✅ Status updated to ${status}! WhatsApp message opened to notify student.`);
+  }
 }
 // ══ FEE SLIP TABS ══
 function switchFeeTab(tab) {
@@ -1551,6 +1610,105 @@ async function searchFeeSlip() {
   }
 }
 
+// ══ FEE RECEIPT GENERATION ══
+let currentFeeSlip = {};
+
+function downloadReceipt() {
+  const r = currentFeeSlip;
+  const receiptHTML = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Fee Receipt — AMICS</title>
+<style>
+  body { font-family: Georgia, serif; background:#fff; color:#0A0F1E; margin:0; padding:40px; }
+  .receipt { max-width:600px; margin:0 auto; border:2px solid #C9A84C; border-radius:12px; overflow:hidden; }
+  .header { background:linear-gradient(135deg,#0A0F1E,#1A2540); color:#fff; padding:28px; text-align:center; }
+  .logo-box { width:56px; height:56px; background:linear-gradient(135deg,#E8C97A,#8B6914); border-radius:12px; display:inline-flex; align-items:center; justify-content:center; font-size:28px; font-weight:900; color:#0A0F1E; margin-bottom:10px; }
+  .inst-name { font-size:20px; font-weight:700; color:#E8C97A; letter-spacing:2px; }
+  .inst-sub { font-size:11px; color:rgba(201,168,76,0.7); letter-spacing:1px; margin-top:4px; }
+  .slogan { font-style:italic; color:rgba(201,168,76,0.6); font-size:12px; margin-top:6px; }
+  .receipt-title { background:#C9A84C; color:#0A0F1E; padding:12px; text-align:center; font-size:16px; font-weight:700; letter-spacing:2px; }
+  .body { padding:28px; }
+  .ref-box { background:#f8f4ec; border:1px solid #C9A84C; border-radius:8px; padding:14px; text-align:center; margin-bottom:20px; }
+  .ref-num { font-size:22px; font-weight:700; color:#8B6914; font-family:monospace; }
+  .ref-label { font-size:11px; color:#888; margin-bottom:4px; }
+  table { width:100%; border-collapse:collapse; }
+  td { padding:10px 14px; border-bottom:1px solid #f0e8d8; font-size:13px; }
+  td:first-child { color:#888; width:40%; }
+  td:last-child { font-weight:600; color:#0A0F1E; }
+  .status-badge { display:inline-block; padding:4px 14px; border-radius:20px; font-size:12px; font-weight:700; background:#fff3cd; color:#856404; border:1px solid #ffc107; }
+  .footer { background:#f8f4ec; padding:16px; text-align:center; font-size:11px; color:#888; border-top:1px solid #e8dcc8; }
+  .stamp { width:80px; height:80px; border:3px solid #C9A84C; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:16px auto; color:#C9A84C; font-size:11px; font-weight:700; text-align:center; line-height:1.4; }
+</style>
+</head>
+<body>
+<div class="receipt">
+  <div class="header">
+    <div class="logo-box">A</div>
+    <div class="inst-name">AMICS</div>
+    <div class="inst-sub">Abdul Mohaimin Institute of Commerce & Science</div>
+    <div class="slogan">We Are Altruistic</div>
+  </div>
+  <div class="receipt-title">FEE PAYMENT RECEIPT</div>
+  <div class="body">
+    <div class="ref-box">
+      <div class="ref-label">REFERENCE NUMBER</div>
+      <div class="ref-num">${r.ref}</div>
+    </div>
+    <table>
+      <tr><td>Date</td><td>${r.date}</td></tr>
+      <tr><td>Student Name</td><td>${r.student}</td></tr>
+      <tr><td>Parent Name</td><td>${r.parent}</td></tr>
+      <tr><td>Phone / WhatsApp</td><td>${r.phone}</td></tr>
+      <tr><td>Payment Method</td><td>${r.method}</td></tr>
+      <tr><td>Amount Paid</td><td style="color:#8B6914;font-size:16px">${r.amount}</td></tr>
+      <tr><td>Transaction ID</td><td>${r.txn || '—'}</td></tr>
+      <tr><td>Status</td><td><span class="status-badge">⏳ Pending Verification</span></td></tr>
+    </table>
+    <div class="stamp">AMICS<br>RECEIVED</div>
+    <p style="text-align:center;font-size:12px;color:#888;margin-top:8px">This is a provisional receipt. Final confirmation will be sent via WhatsApp after verification.</p>
+  </div>
+  <div class="footer">
+    amics.online &nbsp;|&nbsp; WhatsApp: +92 320 5758265 &nbsp;|&nbsp; Oasis.edu.pk@gmail.com
+  </div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([receiptHTML], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `AMICS-Receipt-${r.ref}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ══ MONTHLY FEE REMINDER ══
+function checkMonthlyReminder() {
+  const lastReminder = localStorage.getItem('amics_last_reminder');
+  const now = new Date();
+  const dayOfMonth = now.getDate();
+  // Show reminder on 1st and 25th of every month
+  if ((dayOfMonth === 1 || dayOfMonth === 25) && lastReminder !== now.toDateString()) {
+    setTimeout(() => {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;bottom:90px;right:28px;z-index:300;background:linear-gradient(135deg,#1A2540,#0A0F1E);border:1px solid #C9A84C;border-radius:16px;padding:18px 22px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.4)';
+      banner.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div style="font-size:16px;font-weight:600;color:#E8C97A">💰 Fee Reminder</div>
+          <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#A8A098;cursor:pointer;font-size:16px">✕</button>
+        </div>
+        <div style="font-size:13px;color:#A8A098;margin-bottom:14px">Your monthly fee is due! Please pay and upload your fee slip on time.</div>
+        <button onclick="showPage('payment');switchFeeTab('upload');this.parentElement.remove()" style="width:100%;padding:10px;background:linear-gradient(135deg,#E8C97A,#8B6914);color:#0A0F1E;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px">📤 Upload Fee Slip →</button>
+      `;
+      document.body.appendChild(banner);
+      localStorage.setItem('amics_last_reminder', now.toDateString());
+    }, 3000);
+  }
+}
+
 // ══ FEE SLIP ══
 function showFileName(input) {
   if (input.files && input.files[0]) {
@@ -1594,12 +1752,14 @@ async function submitFeeSlip() {
   const btn = document.getElementById('fee-slip-btn');
   btn.disabled = true; btn.textContent = '⏳ Submitting...';
 
-  // Store locally for search
-  feeSlipRecords.push({
-    ref: fsRef, student, phone, amount, method,
-    date: new Date().toLocaleDateString(),
+  // Store locally for search and receipt
+  const slipData = {
+    ref: fsRef, student, parent, phone, amount, method,
+    txn, date: new Date().toLocaleDateString(),
     status: 'Pending Verification'
-  });
+  };
+  feeSlipRecords.push(slipData);
+  currentFeeSlip = slipData;
 
   await sendToSheet('FeeSlips', {
     'Reference': fsRef,
@@ -1669,5 +1829,8 @@ function switchResTab(tab) {
 }
 
 // Render news on page load
-document.addEventListener('DOMContentLoaded', () => { renderNews(); });
+document.addEventListener('DOMContentLoaded', () => {
+  renderNews();
+  checkMonthlyReminder();
+});
 </script>
