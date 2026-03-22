@@ -1347,14 +1347,6 @@ function showPage(id) {
   window.location.hash = id === 'home' ? '' : id;
 }
 
-// ── Handle URL on load ──
-window.addEventListener('load', () => {
-  const hash = window.location.hash.replace('#','');
-  if (hash && document.getElementById('page-' + hash)) {
-    showPage(hash);
-  }
-});
-
 // ── Chip toggle ──
 function toggleChip(el) { el.classList.toggle('selected'); }
 function getChips(id) { return [...document.querySelectorAll('#'+id+' .chip.selected')].map(c=>c.textContent).join(', '); }
@@ -1967,5 +1959,10 @@ function switchResTab(tab) {
 document.addEventListener('DOMContentLoaded', () => {
   renderNews();
   checkMonthlyReminder();
+  // Handle URL hash routing
+  const hash = window.location.hash.replace('#','');
+  if (hash && document.getElementById('page-' + hash)) {
+    showPage(hash);
+  }
 });
 </script>
