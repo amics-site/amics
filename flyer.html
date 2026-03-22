@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMICS Flyer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#2a2a2a;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:40px 20px;
+    gap:30px;
+    font-family:'DM Sans',sans-serif;
+  }
+
+  .page-title {
+    color:#C9A84C;
+    font-size:14px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    opacity:0.6;
+  }
+
+  /* ══ FLYER ══ */
+  .flyer {
+    width:420px;
+    min-height:680px;
+    background:linear-gradient(160deg,#0A0F1E 0%,#1A2540 50%,#0D1525 100%);
+    border-radius:24px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.3);
+  }
+
+  /* Background decorations */
+  .flyer::before {
+    content:'';
+    position:absolute;
+    top:-80px; right:-80px;
+    width:280px; height:280px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);
+  }
+  .flyer::after {
+    content:'';
+    position:absolute;
+    bottom:-60px; left:-60px;
+    width:220px; height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(201,168,76,0.08) 0%,transparent 70%);
+  }
+
+  /* Top gold bar */
+  .top-bar {
+    height:5px;
+    background:linear-gradient(90deg,transparent,#C9A84C,#E8C97A,#C9A84C,transparent);
+  }
+
+  /* Header */
+  .flyer-header {
+    padding:32px 32px 24px;
+    text-align:center;
+    position:relative;
+    z-index:1;
+  }
+
+  .logo-row {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .logo-box {
+    width:58px; height:58px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#E8C97A,#8B6914);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display',serif;
+    font-size:30px; font-weight:900; color:#0A0F1E;
+    box-shadow:0 4px 16px rgba(201,168,76,0.4);
+  }
+  .logo-text-box { text-align:left; }
+  .logo-name {
+    font-family:'Playfair Display',serif;
+    font-size:26px; font-weight:900;
+    background:linear-gradient(135deg,#E8C97A,#C9A84C);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; letter-spacing:4px; line-height:1;
+  }
+  .logo-full {
+    font-size:9px; color:rgba(201,168,76,0.7);
+    letter-spacing:0.5px; text-transform:uppercase;
+    font-family:'Cormorant Garamond',serif;
+    margin-top:2px;
+  }
+
+  .divider-line {
+    width:100%; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),transparent);
+    margin:16px 0;
+  }
+
+  .slogan {
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:14px; color:rgba(201,168,76,0.8);
+    letter-spacing:1px;
+  }
+
+  /* Hero section */
+  .hero-section {
+    padding:0 32px 24px;
+    text-align:center;
+    position:relative; z-index:1;
+  }
+
+  .hero-badge {
+    display:inline-block;
+    padding:6px 18px; border-radius:20px;
+    background:rgba(201,168,76,0.12);
+    border:1px solid rgba(201,168,76,0.3);
+    font-size:11px; color:#C9A84C;
+    letter-spacing:2px; text-transform:uppercase;
+    margin-bottom:16px;
+  }
+
+  .hero-title {
+    font-family:'Playfair Display',serif;
+    font-size:28px; font-weight:900;
+    color:#F0EBE0; line-height:1.25;
+    margin-bottom:8px;
+  }
+  .hero-title span { color:#C9A84C; }
+
+  .hero-sub {
+    font-size:13px; color:rgba(201,168,76,0.7);
+    line-height:1.6; font-style:italic;
+    font-family:'Cormorant Garamond',serif;
+    font-size:15px;
+  }
+
+  /* Gold banner */
+  .gold-banner {
+    margin:0 24px;
+    background:linear-gradient(135deg,#C9A84C,#8B6914);
+    border-radius:14px;
+    padding:18px 24px;
+    position:relative; z-index:1;
+  }
+  .gold-banner h3 {
+    font-family:'Playfair Display',serif;
+    font-size:14px; color:#0A0F1E;
+    font-weight:700; margin-bottom:12px;
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  .subjects-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+  }
+  .subject-item {
+    display:flex; align-items:center; gap:7px;
+    font-size:12px; color:#0A0F1E; font-weight:600;
+  }
+  .subject-item::before {
+    content:'✓';
+    font-weight:900; font-size:11px;
+  }
+
+  /* Features */
+  .features {
+    padding:20px 32px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    position:relative; z-index:1;
+  }
+  .feature-item {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:12px; border-radius:10px;
+    background:rgba(201,168,76,0.06);
+    border:1px solid rgba(201,168,76,0.15);
+  }
+  .feature-icon { font-size:18px; flex-shrink:0; }
+  .feature-text { font-size:11px; color:rgba(240,235,224,0.85); line-height:1.4; }
+  .feature-text strong { color:#C9A84C; display:block; font-size:12px; margin-bottom:1px; }
+
+  /* Bottom section */
+  .bottom-section {
+    padding:20px 32px 28px;
+    position:relative; z-index:1;
+  }
+
+  .contact-row {
+    display:flex; flex-direction:column; gap:10px;
+    margin-bottom:18px;
+  }
+  .contact-item {
+    display:flex; align-items:center; gap:12px;
+    padding:11px 16px; border-radius:10px;
+    background:rgba(201,168,76,0.08);
+    border:1px solid rgba(201,168,76,0.2);
+  }
+  .contact-icon { font-size:18px; flex-shrink:0; }
+  .contact-label { font-size:10px; color:rgba(201,168,76,0.6); letter-spacing:1px; text-transform:uppercase; }
+  .contact-value { font-size:13px; color:#F0EBE0; font-weight:600; margin-top:1px; }
+
+  /* Enroll button */
+  .enroll-btn {
+    display:block; width:100%;
+    padding:16px; border-radius:12px;
+    background:linear-gradient(135deg,#E8C97A,#C9A84C,#8B6914);
+    color:#0A0F1E; font-family:'Playfair Display',serif;
+    font-size:16px; font-weight:700;
+    text-align:center; text-decoration:none;
+    letter-spacing:2px; text-transform:uppercase;
+    box-shadow:0 6px 20px rgba(201,168,76,0.35);
+    cursor:pointer; border:none;
+    transition:all .3s;
+  }
+  .enroll-btn:hover {
+    transform:translateY(-2px);
+    box-shadow:0 10px 28px rgba(201,168,76,0.5);
+  }
+  .enroll-btn span {
+    display:block; font-family:'DM Sans',sans-serif;
+    font-size:11px; font-weight:400;
+    letter-spacing:1px; opacity:0.8; margin-top:2px;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    height:5px;
+    background:linear-gradient(90deg,transparent,#C9A84C,#E8C97A,#C9A84C,transparent);
+    margin-top:4px;
+  }
+
+  /* Corner ornaments */
+  .corner { position:absolute; width:24px; height:24px; z-index:2; }
+  .corner.tl { top:14px; left:14px; border-top:2px solid rgba(201,168,76,0.5); border-left:2px solid rgba(201,168,76,0.5); }
+  .corner.tr { top:14px; right:14px; border-top:2px solid rgba(201,168,76,0.5); border-right:2px solid rgba(201,168,76,0.5); }
+  .corner.bl { bottom:14px; left:14px; border-bottom:2px solid rgba(201,168,76,0.5); border-left:2px solid rgba(201,168,76,0.5); }
+  .corner.br { bottom:14px; right:14px; border-bottom:2px solid rgba(201,168,76,0.5); border-right:2px solid rgba(201,168,76,0.5); }
+
+  /* Save instructions */
+  .save-tip {
+    color:rgba(201,168,76,0.5);
+    font-size:11px; text-align:center;
+    border:1px solid rgba(201,168,76,0.15);
+    padding:12px 24px; border-radius:8px;
+    max-width:420px; line-height:1.7;
+  }
+  .save-tip strong { color:#C9A84C; }
+</style>
+</head>
+<body>
+
+
+
+<!-- ══ FLYER ══ -->
+<div class="flyer">
+
+  <!-- Corner ornaments -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="top-bar"></div>
+
+  <!-- Header -->
+  <div class="flyer-header">
+    <div class="logo-row">
+      <div class="logo-box">A</div>
+      <div class="logo-text-box">
+        <div class="logo-name">AMICS</div>
+        <div class="logo-full">Abdul Mohaimin Institute of Commerce & Science</div>
+      </div>
+    </div>
+    <div class="divider-line"></div>
+    <div class="slogan">"We Are Altruistic"</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero-section">
+    <div class="hero-badge">🏠 Home Tutoring Services</div>
+    <div class="hero-title">
+      Quality Education<br>
+      <span>At Your Doorstep</span>
+    </div>
+    <div class="hero-sub">
+      Verified expert tutors delivered directly to your home — anywhere in Pakistan & worldwide
+    </div>
+  </div>
+
+  <!-- Subjects banner -->
+  <div class="gold-banner">
+    <h3>📚 Subjects We Cover</h3>
+    <div class="subjects-grid">
+      <div class="subject-item">Mathematics</div>
+      <div class="subject-item">Business Studies</div>
+      <div class="subject-item">Accounts</div>
+      <div class="subject-item">Economics</div>
+      <div class="subject-item">Physics</div>
+      <div class="subject-item">Chemistry</div>
+      <div class="subject-item">English</div>
+      <div class="subject-item">Computer Science</div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature-item">
+      <div class="feature-icon">✅</div>
+      <div class="feature-text"><strong>Verified Tutors</strong>Screened & background checked</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🌍</div>
+      <div class="feature-text"><strong>Global Reach</strong>Pakistan & worldwide</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🎓</div>
+      <div class="feature-text"><strong>All Levels</strong>Primary to Postgraduate</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">📱</div>
+      <div class="feature-text"><strong>Easy Enroll</strong>Register online in minutes</div>
+    </div>
+  </div>
+
+  <!-- Contact & Enroll -->
+  <div class="bottom-section">
+    <div class="contact-row">
+      <div class="contact-item">
+        <div class="contact-icon">💬</div>
+        <div>
+          <div class="contact-label">WhatsApp</div>
+          <div class="contact-value">+92 320 5758265</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🌐</div>
+        <div>
+          <div class="contact-label">Website</div>
+          <div class="contact-value">amics.online</div>
+        </div>
+      </div>
+    </div>
+
+        <a href="https://amics.online" target="_blank" style="display:block;width:100%;padding:16px;border-radius:12px;background:linear-gradient(135deg,#E8C97A,#C9A84C,#8B6914);color:#0A0F1E;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;text-align:center;text-decoration:none;letter-spacing:2px;text-transform:uppercase;box-shadow:0 6px 20px rgba(201,168,76,0.35)">
+          Enroll Now — It's Free!
+          <span>Tap to register on amics.online</span>
+        </a>
+  </div>
+
+  <div class="bottom-bar"></div>
+</div>
+
+<!-- WhatsApp Message Text Below Flyer -->
+<div style="width:420px;background:#1A2540;border:1px solid rgba(201,168,76,0.3);border-radius:16px;padding:24px;color:#F0EBE0;font-family:'DM Sans',sans-serif;">
+  <div style="font-size:11px;color:rgba(201,168,76,0.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">📱 WhatsApp Message</div>
+  <p style="font-size:14px;line-height:1.8;color:#F0EBE0;">
+    🌟 <strong style="color:#E8C97A">AMICS — Abdul Mohaimin Institute of Commerce & Science</strong><br><br>
+    Are you looking for a qualified home tutor for your child?<br><br>
+    ✅ Expert tutors for O-Level & A-Level<br>
+    ✅ Mathematics, Business, Accounts, Economics<br>
+    ✅ Physics, Chemistry, English & more<br>
+    ✅ Tutor comes to YOUR home<br>
+    ✅ Online sessions also available<br>
+    ✅ Verified & experienced tutors<br><br>
+    🌍 Now serving Pakistan & Internationally!<br><br>
+    📝 Enroll now: <strong style="color:#C9A84C">amics.online</strong><br>
+    📱 WhatsApp: <strong style="color:#C9A84C">+92 320 5758265</strong><br>
+    📧 <strong style="color:#C9A84C"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a755b495349145f5e4f144a517a5d575b535614595557">[email&#160;protected]</a></strong><br><br>
+    <em style="color:rgba(201,168,76,0.7)">"We Are Altruistic"</em>
+  </p>
+  <div style="margin-top:18px;text-align:center">
+    <a href="https://amics.online" target="_blank" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#E8C97A,#8B6914);color:#0A0F1E;border-radius:10px;fo
