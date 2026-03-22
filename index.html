@@ -280,7 +280,7 @@
 <!-- ══════════════════════════════════════════
      HOME PAGE
 ══════════════════════════════════════════ -->
-<div id="page-home" class="page active">
+<div id="page-home" class="page">
 
   <div class="hero">
     <div>
@@ -1963,6 +1963,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash.replace('#','');
   if (hash && document.getElementById('page-' + hash)) {
     showPage(hash);
+  } else {
+    showPage('home');
   }
 });
 </script>
