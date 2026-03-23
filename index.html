@@ -958,6 +958,27 @@ function doGet() {
      PAYMENT & FEES PAGE
 ══════════════════════════════════════════ -->
 <div id="page-payment" class="page">
+<div class="section" style="text-align:center">
+
+  <div class="section-title">💰 Fee <span>Challan</span></div>
+  <div class="section-sub">
+    Download the official fee slip, pay your fee, then upload proof for verification.
+    <br><strong style="color:#E74C3C">Note: Roll Number Slip will ONLY be issued after fee verification.</strong>
+  </div>
+
+  <!-- Fee Slip Preview -->
+  <div style="margin-top:30px; border:1px solid var(--border); border-radius:16px; overflow:hidden">
+    <iframe src="fee-slip/fee-slip.pdf" width="100%" height="500px"></iframe>
+  </div>
+
+  <!-- Download Button -->
+  <div style="margin-top:20px">
+    <a href="fee-slip/fee-slip.pdf" download>
+      <button class="btn-lg btn-gold">📥 Download Fee Slip</button>
+    </a>
+  </div>
+
+</div>
   <div class="section" style="max-width:900px">
     <div class="section-title">💰 Fees & <span>Payment</span></div>
     <div class="section-sub">Simple, transparent fee structure — pay easily from anywhere in the world</div>
